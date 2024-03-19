@@ -1,28 +1,52 @@
-# Moonlight for ChromeOS
+# Moonlight for Tizen TV
 
-[Moonlight for ChromeOS](https://moonlight-stream.org) is an open source implementation of NVIDIA's GameStream, as used by the NVIDIA Shield, but built to run on ChromeOS.
+According to description from official Moonlight website:
 
-Moonlight for ChromeOS allows you to stream your full collection of games from your powerful desktop to another PC or laptop running ChromeOS.
+> You can stream your collection of PC games from your GameStream-compatible PC to any supported device and play them remotely. Moonlight is perfect for gaming on the go without sacrificing the graphics and game selection available on PC.
 
-For Windows, Mac, and Linux, we recommend running the [new PC port](https://github.com/moonlight-stream/moonlight-qt) for maximum performance.
+This specific repository contains implementation of Moonlight clieant for Tizen TV devices using WebAssembly and Tizen TV-specific extensions.
 
-Moonlight also has mobile versions for [Android](https://github.com/moonlight-stream/moonlight-android) and [iOS/tvOS](https://github.com/moonlight-stream/moonlight-ios).
+## Used Tizen specific features
+- [Tizen WASM Player](https://developer.samsung.com/smarttv/develop/extension-libraries/webassembly/tizen-wasm-player/overview.html) - video/audio playback
+- [Tizen Sockets Extension](https://developer.samsung.com/smarttv/develop/extension-libraries/webassembly/api-reference/tizen-sockets-extension.html) - networking
 
-Check out [the Moonlight wiki](https://github.com/moonlight-stream/moonlight-docs/wiki) for more detailed project information, setup guide, or troubleshooting steps.
+## Checking out required submodules
+Since some of the dependencies used are provided as git submodules,
+after cloning this repository (if you did not provide the `--recurse-submodules`
+option while cloning) you need to issue the below command:
 
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/w716mt9ulyww68c5/branch/master?svg=true)](https://ci.appveyor.com/project/cgutman/moonlight-chrome/branch/master)
-
-[![Moonlight for ChromeOS](https://moonlight-stream.org/images/chrome_webstore.png)](https://chrome.google.com/webstore/detail/moonlight-game-streaming/gemamigbbenahjlfnmlfdjhdnkpbkfjj)
+```bash
+git submodule update --init --recursive
+```
 
 ## Building
-1. Install the Chrome Native Client SDK and download the current Pepper SDK
-2. Set the `NACL_SDK_ROOT` environment variable to your Pepper SDK folder. If you need more detailed instructions, see [here](https://github.com/google/pepper.js/wiki/Getting-Started)
-3. Run `git submodule update --init --recursive` from within `moonlight-chrome/`
-4. Run `make` from within the `moonlight-chrome/` repo
 
-## Testing
-1. Open the Extensions page in Chrome
-2. Check the 'Developer mode' option
-3. Click 'Load unpacked extension' and point it at your built moonlight-chrome repo
-4. Run Moonlight from the extensions page
-5. If making changes, make sure to click the Reload button on the Extensions page
+### Required software
+- [Samsung Emscripten fork](https://developer.samsung.com/smarttv/develop/extension-libraries/webassembly/getting-started/downloading-and-installing.html)
+- cmake (at least 3.10 - tested using CMake 3.10 and CMake 3.18)
+- ninja (at least 1.8.2- recommended for Windows)
+
+### Build procedure
+
+```bash
+mkdir build
+cd build/
+cmake -DCMAKE_TOOLCHAIN_FILE=<YOUR EMSCRIPTEN INSTALLATION_DIR>/cmake/Modules/Platform/Emscripten.cmake -G Ninja ..
+ninja
+
+# CMake 3.10 (and above):
+cmake -DCMAKE_INSTALL_PREFIX=. -P cmake_install.cmake
+
+# CMake 3.15 (and above):
+cmake --install . --prefix .
+```
+
+*Note:* On Linux and MacOS you can also use Makefile cmake generators.
+
+After that you can pack widget as described in
+[Sample cURL application built using CLI tools](https://developer.samsung.com/smarttv/develop/extension-libraries/webassembly/tizen-sockets-extension/sample-curl-application-built-using-cli-tools.html)
+tutorial.
+
+## Credits
+* Original Moonlight for ChromeOS [https://github.com/moonlight-stream/moonlight-chrome]
+* Original Tizen TV port [https://github.com/SamsungDForum/moonlight-chrome]
